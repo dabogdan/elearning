@@ -9,12 +9,17 @@ const Header = () => {
     const handleLogout = () => {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('role');
         delete axios.defaults.headers.common['Authorization'];
         toast.success("Logged out successfully!");
-        navigate('/login');
+        navigate('/courses');
     };
 
     const isAuthenticated = !!localStorage.getItem('access_token');
+    const role = localStorage.getItem('role');
+    console.log(role);
+    
 
     return (
         <nav className="bg-blue-600 text-white p-4">
@@ -25,7 +30,14 @@ const Header = () => {
                 <div className="flex space-x-4">
                     <Link to="/courses" className="hover:text-gray-200">Courses</Link>
                     {isAuthenticated ? (
-                        <button onClick={handleLogout} className="hover:text-gray-200">Logout</button>
+                        <>
+                            <Link to="/profile" className="hover:text-gray-200">Profile</Link>
+                            <Link to="/dashboard" className="hover:text-gray-200">Dashboard</Link>
+                            <Link to="/chat/general" className="hover:text-gray-200">Chat Room</Link>
+                            {role === 'teacher' && <Link to="/search" className="px-2">Search Users</Link>}
+                            <button onClick={handleLogout} className="hover:text-gray-200">Logout</button>
+                            
+                        </>
                     ) : (
                         <>
                             <Link to="/register" className="hover:text-gray-200">Register</Link>
@@ -36,6 +48,6 @@ const Header = () => {
             </div>
         </nav>
     );
-}
+};
 
 export default Header;

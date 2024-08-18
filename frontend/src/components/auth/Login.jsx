@@ -1,13 +1,21 @@
 // src/components/Login.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import AuthNotice from './AuthNotice';
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('access_token');
+        if (accessToken) {
+            navigate('/dashboard');
+        }
+    }, [navigate]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -24,6 +32,7 @@ function Login() {
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
             localStorage.setItem('user_id', response.data.user_id);
+            localStorage.setItem('role', response.data.role);
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
             toast.success("Logged in successfully!");
             navigate('/dashboard');
@@ -70,74 +79,15 @@ function Login() {
                         Login
                     </button>
                 </form>
+                <AuthNotice
+                    signedInMessage="Want to browse more courses?"
+                    signedOutMessage="Not registered yet?"
+                    signedInLink="/dashboard"
+                    signedOutLink="/register"
+                />
             </div>
         </div>
     );
 }
 
 export default Login;
-
-
-
-
-// import React, { useState } from 'react';
-// import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
-// import { toast } from 'react-toastify';
-
-
-// function Login() {
-//     const [username, setUsername] = useState('');
-//     const [password, setPassword] = useState('');
-//     const navigate = useNavigate();
-
-//     const handleLogin = async (e) => {
-//         e.preventDefault();
-
-//         const requestData = {
-//             username: username,
-//             password: password,
-//         };
-
-//         try {
-//             const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/login/`, requestData);
-//             localStorage.setItem('access_token', response.data.access);
-//             localStorage.setItem('refresh_token', response.data.refresh);
-//             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
-//             toast.success("Logged in successfully!");
-//             navigate('/dashboard');
-//         } catch (error) {
-//             console.error("Login error:", error.response ? error.response.data : error.message);  // Log the error
-//             toast.error("Login failed. Please check your credentials.");
-//         }
-//     };
-
-//     return (
-//         <div>
-//             <h2>Login</h2>
-//             <form onSubmit={handleLogin}>
-//                 <div>
-//                     <label>Username:</label>
-//                     <input
-//                         type="text"
-//                         value={username}
-//                         onChange={(e) => setUsername(e.target.value)}
-//                         required
-//                     />
-//                 </div>
-//                 <div>
-//                     <label>Password:</label>
-//                     <input
-//                         type="password"
-//                         value={password}
-//                         onChange={(e) => setPassword(e.target.value)}
-//                         required
-//                     />
-//                 </div>
-//                 <button type="submit">Login</button>
-//             </form>
-//         </div>
-//     );
-// }
-
-// export default Login;

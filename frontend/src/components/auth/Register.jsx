@@ -3,11 +3,13 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import AuthNotice from './AuthNotice';
 
 function Register() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [role, setRole] = useState('student'); // Default role is student
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
@@ -17,6 +19,7 @@ function Register() {
             username,
             email,
             password,
+            role
         };
 
         try {
@@ -59,7 +62,7 @@ function Register() {
                             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
                         />
                     </div>
-                    <div className="mb-6">
+                    <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
                             Password
                         </label>
@@ -72,6 +75,20 @@ function Register() {
                             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
                         />
                     </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="role">
+                            Role
+                        </label>
+                        <select
+                            id="role"
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
+                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+                        >
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
+                    </div>
                     <button
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
@@ -79,85 +96,15 @@ function Register() {
                         Register
                     </button>
                 </form>
+                <AuthNotice
+                    signedInMessage="Want to browse more courses?"
+                    signedOutMessage="Do you have an account?"
+                    signedInLink="/dashboard"
+                    signedOutLink="/login"
+                />
             </div>
         </div>
     );
 }
 
 export default Register;
-
-
-
-
-// import React, { useState } from 'react';
-// import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
-// import { toast } from 'react-toastify';
-
-// function Register() {
-//     const [username, setUsername] = useState('');
-//     const [email, setEmail] = useState('');
-//     const [password, setPassword] = useState('');
-//     const navigate = useNavigate();
-
-//     const handleRegister = async (e) => {
-//         e.preventDefault();
-
-//         const requestData = {
-//             username,
-//             email,
-//             password,
-//         };
-
-//         console.log("Request data:", requestData);
-
-//         try {
-//             await axios.post(`${process.env.REACT_APP_BASE_URL}/api/register/`, requestData);
-
-//             toast.success("Registration successful! Please log in.");
-
-//             navigate('/login');  // Redirect to login page after registration
-//         } catch (error) {
-//             console.error("Registration error:", error.response ? error.response.data : error.message);
-//             toast.error("Registration failed. Please try again.");
-//         }
-//     };
-
-//     return (
-//         <div>
-//             <h2>Register</h2>
-//             <form onSubmit={handleRegister}>
-//                 <div>
-//                     <label>Username:</label>
-//                     <input
-//                         type="text"
-//                         value={username}
-//                         onChange={(e) => setUsername(e.target.value)}
-//                         required
-//                     />
-//                 </div>
-//                 <div>
-//                     <label>Email:</label>
-//                     <input
-//                         type="email"
-//                         value={email}
-//                         onChange={(e) => setEmail(e.target.value)}
-//                         required
-//                     />
-//                 </div>
-//                 <div>
-//                     <label>Password:</label>
-//                     <input
-//                         type="password"
-//                         value={password}
-//                         onChange={(e) => setPassword(e.target.value)}
-//                         required
-//                     />
-//                 </div>
-//                 <button type="submit">Register</button>
-//             </form>
-//         </div>
-//     );
-// }
-
-// export default Register;

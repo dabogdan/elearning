@@ -1,14 +1,34 @@
-// src/components/CourseForm.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-function CourseForm({ course = null }) {
-    const [title, setTitle] = useState(course ? course.title : '');
-    const [description, setDescription] = useState(course ? course.description : '');
-    const [imageUrl, setImageUrl] = useState(course ? course.imageUrl : '');
+function CourseForm() {
+    const { id } = useParams(); // Get course ID from the URL params
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (id) {
+            // Fetch course data if we're editing an existing course
+            const fetchCourse = async () => {
+                try {
+                    const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/courses/${id}/`);
+                    const course = response.data;
+                    setTitle(course.title);
+                    setDescription(course.description);
+                    setImageUrl(course.imageUrl);
+                } catch (error) {
+                    console.error("Failed to fetch course details", error);
+                    toast.error("Failed to load course data. Please try again.");
+                }
+            };
+
+            fetchCourse();
+        }
+    }, [id]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,8 +40,6 @@ function CourseForm({ course = null }) {
             instructor: localStorage.getItem('user_id')
         };
 
-        console.log("Course Data:", courseData); 
-
         try {
             const token = localStorage.getItem('access_token');
             const config = {
@@ -30,9 +48,9 @@ function CourseForm({ course = null }) {
                 },
             };
 
-            if (course) {
+            if (id) {
                 // Update existing course
-                await axios.put(`${process.env.REACT_APP_BASE_URL}/api/courses/${course.id}/`, courseData, config);
+                await axios.put(`${process.env.REACT_APP_BASE_URL}/api/courses/${id}/`, courseData, config);
                 toast.success("Course updated successfully!");
             } else {
                 // Create new course
@@ -42,7 +60,7 @@ function CourseForm({ course = null }) {
             navigate('/dashboard');
         } catch (error) {
             if (error.response && error.response.status === 400) {
-                console.error("Bad Request Error:", error.response.data);  // Log the error response
+                console.error("Bad Request Error:", error.response.data);
                 toast.error("Failed to save course. Please check your input.");
             } else if (error.response && error.response.status === 401) {
                 toast.error("Unauthorized. Please log in again.");
@@ -57,7 +75,7 @@ function CourseForm({ course = null }) {
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
                 <h2 className="text-2xl font-bold text-center mb-6">
-                    {course ? 'Edit Course' : 'Create Course'}
+                    {id ? 'Edit Course' : 'Create Course'}
                 </h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
@@ -101,7 +119,7 @@ function CourseForm({ course = null }) {
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
                     >
-                        {course ? 'Update Course' : 'Create Course'}
+                        {id ? 'Update Course' : 'Create Course'}
                     </button>
                 </form>
             </div>
