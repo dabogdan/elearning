@@ -5,13 +5,14 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    
+    role = serializers.ChoiceField(choices=UserProfile.USER_ROLES, default='student', write_only=True)  # Add role field
+
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'first_name', 'last_name']
+        fields = ['username', 'email', 'first_name', 'last_name', 'password', 'role']
 
     def create(self, validated_data):
-        # User creation
+        role = validated_data.pop('role', 'student')  # Extract the role from the validated data
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
@@ -19,19 +20,16 @@ class UserSerializer(serializers.ModelSerializer):
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', '')
         )
+        user_profile = UserProfile.objects.create(user=user, role=role)
+        print(f'UserProfile created: {user_profile}')  # Debug print
         return user
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['role'] = instance.userprofile.role  # Add role from the related UserProfile
-        return representation
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
     class Meta:
         model = UserProfile
-        fields = ['user', 'organisation', 'role', 'profile_photo']
+        fields = ['user', 'organisation', 'role', 'profile_photo', 'enrolled_courses']
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})
@@ -48,11 +46,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         # Update UserProfile model fields
         instance.organisation = validated_data.get('organisation', instance.organisation)
+        instance.role = validated_data.get('role', instance.role)
         if 'profile_photo' in validated_data:
             instance.profile_photo = validated_data['profile_photo']
+        
+        enrolled_courses = validated_data.get('enrolled_courses', [])
+        if enrolled_courses:
+            instance.enrolled_courses.set(enrolled_courses)
+        # if 'enrolled_courses' in validated_data:
+        #     instance.enrolled_courses.set(validated_data['enrolled_courses'])
         instance.save()
 
         return instance
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
@@ -60,7 +67,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super().validate(attrs)
 
         data['user_id'] = self.user.id
-        data['role'] = self.user.userprofile.role
+        data['role'] = self.user.profile.role
 
         return data
 
@@ -86,9 +93,11 @@ class CourseSerializer(serializers.ModelSerializer):
         return None
 
 class StatusUpdateSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
     class Meta:
         model = StatusUpdate
-        fields = '__all__'
+        fields = ['user', 'content', 'created_at']
+        read_only_fields = ['user', 'created_at']
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:

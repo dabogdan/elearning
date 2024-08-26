@@ -12,7 +12,11 @@ function Dashboard() {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/courses/`, {
+                let url = `${process.env.REACT_APP_BASE_URL}/api/courses/`;
+                if (role === 'student') {
+                    url = `${process.env.REACT_APP_BASE_URL}/api/enrollments/enrolled_courses/`;
+                }
+                const response = await axios.get(url, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -39,10 +43,7 @@ function Dashboard() {
             }
         };
 
-        if (role === 'teacher') {
-            fetchLatestNotification();
-        }
-
+        fetchLatestNotification();
         fetchCourses();
     }, [role, token]);
 
@@ -52,7 +53,7 @@ function Dashboard() {
 
     return (
         <div className="container mx-auto p-4">
-            {role === 'teacher' && latestNotification && (
+            {latestNotification && (
                 <div className="mb-4">
                     <h2 className="text-xl font-bold">Latest Notification</h2>
                     <div className={`p-2 ${latestNotification.is_read ? 'bg-gray-200' : 'bg-white'} rounded-md mb-2`}>
@@ -63,7 +64,7 @@ function Dashboard() {
                 </div>
             )}
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">{role === 'teacher' ? 'Your Courses' : 'Available Courses'}</h1>
+                <h1 className="text-2xl font-bold">{role === 'teacher' ? 'Your Courses' : 'Enrolled Courses'}</h1>
                 {role === 'teacher' && (
                     <Link
                         to="/courses/new"
@@ -74,7 +75,7 @@ function Dashboard() {
                 )}
             </div>
             {filteredCourses.length === 0 ? (
-                <p>{role === 'teacher' ? "You haven't created any courses yet." : "There are no courses available yet."}</p>
+                <p>{role === 'teacher' ? "You haven't created any courses yet." : "You are not enrolled in any courses yet."}</p>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredCourses.map(course => (

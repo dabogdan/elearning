@@ -13,9 +13,10 @@ import CourseForm from './components/CourseForm';
 import Courses from './components/Courses';
 import CourseDetail from './components/CourseDetail';
 import Notifications from './components/Notifications';
-import ChatRoom from './components/ChatRoom';
+import ChatRoom from './components/chat/ChatRoom';
 import ProfilePage from './components/ProfilePage';
 import UserSearch from './components/UserSearch';
+import UserList from './components/chat/UserList';
 
 function App() {
     return (
@@ -30,21 +31,21 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/logout" element={<Logout />} />
                 <Route
-                            path="/profile"
-                            element={
-                                <ProtectedRoute>
-                                    <ProfilePage />
-                                </ProtectedRoute>
-                            }
-                        />
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <ProfilePage />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route
-                            path="/dashboard"
-                            element={
-                                <ProtectedRoute>
-                                    <Dashboard />
-                                </ProtectedRoute>
-                            }
-                        />
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route
                     path="/notifications"
                     element={
@@ -62,11 +63,19 @@ function App() {
                     }
                 />
                 <Route path="/courses/edit/:id" element={
-                                <ProtectedRoute allowedRoles={['teacher']}>
-                                    <CourseForm />
-                                </ProtectedRoute>
-                            } 
-                        />
+                        <ProtectedRoute allowedRoles={['teacher']}>
+                            <CourseForm />
+                        </ProtectedRoute>
+                    } 
+                />
+                <Route
+                    path="/chat/:roomName"
+                    element={
+                        <ProtectedRoute>
+                            <UserList />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route
                     path="/chat/:roomName"
                     element={

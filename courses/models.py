@@ -1,19 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
-
-class UserProfile(models.Model):
-    USER_ROLES = (
-        ('student', 'Student'),
-        ('teacher', 'Teacher'),
-    )
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    organisation = models.CharField(max_length=256, null=True, blank=True)
-    role = models.CharField(max_length=10, choices=USER_ROLES, default='student')
-    enrolled_courses = models.ManyToManyField('Course', related_name='enrolled_students')
-    profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.user.username} - {self.get_role_display()}"
+from django.contrib.auth.models import User, AbstractUser
 
 class Course(models.Model):
     title = models.CharField(max_length=255)
@@ -23,6 +9,20 @@ class Course(models.Model):
 
     def __str__(self):
         return self.title
+
+class UserProfile(models.Model):
+    USER_ROLES = (
+        ('student', 'Student'),
+        ('teacher', 'Teacher'),
+    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    organisation = models.CharField(max_length=256, null=True, blank=True)
+    role = models.CharField(max_length=10, choices=USER_ROLES, default='student')
+    profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
+    enrolled_courses = models.ManyToManyField(Course, related_name='students')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.get_role_display()}"
 
 class Enrollment(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrollments')
@@ -46,12 +46,12 @@ class Feedback(models.Model):
         return f'{self.student.username} - {self.course.title}'
 
 class StatusUpdate(models.Model):
-    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='status_updates')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='status_updates', default=1)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Status Update by {self.user_profile.user.username}'
+        return f'Status Update by {self.user.username}'
 
 class Notification(models.Model):
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
@@ -69,3 +69,21 @@ class CourseMaterial(models.Model):
 
     def __str__(self):
         return f'Material for {self.course.title}'
+
+class PrivateChatRoom(models.Model):
+    participants = models.ManyToManyField(User)
+
+    def __str__(self):
+        return f"Chat between: {', '.join([user.username for user in self.participants.all()])}"
+
+class ChatMessage(models.Model):
+    room = models.ForeignKey(PrivateChatRoom, on_delete=models.CASCADE, related_name='messages')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username}: {self.message}'
+
+    class Meta:
+        ordering = ('timestamp',)
