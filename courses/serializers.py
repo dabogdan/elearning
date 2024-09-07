@@ -112,11 +112,13 @@ class CourseMaterialSerializer(serializers.ModelSerializer):
 
 class EnrollmentSerializer(serializers.ModelSerializer):
     student_username = serializers.CharField(source='student.username', read_only=True)
+    id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Enrollment
-        fields = ['student', 'student_username', 'course', 'enrolled_at']
+        fields = ['id', 'student', 'student_username', 'course', 'enrolled_at']
         read_only_fields = ['student', 'student_username', 'enrolled_at']
+
 
     def create(self, validated_data):
         user = self.context['request'].user

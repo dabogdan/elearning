@@ -8,7 +8,7 @@ const ChatRoom = () => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const wsUrl = `ws://localhost:8000/ws/chat/${username}/`;
+        const wsUrl = `${process.env.REACT_APP_BASE_WS_URL}/ws/chat/${username}/`;
         const chatSocket = new WebSocket(wsUrl);
 
         chatSocket.onopen = () => {

@@ -24,7 +24,7 @@ urlpatterns = [
     path('api/courses/<int:course_id>/has_left_feedback/', HasLeftFeedbackView.as_view(), name='has-left-feedback'),
     path('api/profile/', UserProfileView.as_view(), name='user-profile'),
     path('api/search/', UserSearchView.as_view(), name='user-search'),
-    path('enrollments/<int:pk>/remove/', EnrollmentViewSet.as_view({'post': 'remove_student'}), name='remove-student'),
+    path('api/enrollments/<int:pk>/remove/', EnrollmentViewSet.as_view({'post': 'remove_student'}), name='remove-student'),
     path('api/users/', UserListView.as_view(), name='user-list'),
     # path('api/status-updates/', StatusUpdateViewSet.as_view(), name='status-update-create'),
     # path('api/status-updates/user/', StatusUpdateViewSet.as_view(), name='user-status-updates'),
@@ -33,3 +33,5 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+import logging
+# logging.debug("Available URLs: %s", urlpatterns)

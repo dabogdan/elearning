@@ -47,7 +47,8 @@ const UserList = () => {
         if (!selectedUser) return;
 
         // WS connection
-        const wsUrl = `ws://localhost:8000/ws/chat/${selectedUser.user.username}/?token=${localStorage.getItem('access_token')}`;
+        const wsUrl = `${process.env.REACT_APP_BASE_WS_URL}/ws/chat/${selectedUser.user.username}/?token=${localStorage.getItem('access_token')}`;
+        console.log(wsUrl);
         const chatSocket = new WebSocket(wsUrl);
 
         chatSocket.onopen = () => {

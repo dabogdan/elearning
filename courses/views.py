@@ -215,13 +215,14 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
 
         return Response({"detail": "Successfully enrolled."}, status=status.HTTP_201_CREATED)
 
-   
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def remove_student(self, request, pk=None):
         enrollment = self.get_object()
+        logging.info(enrollment)
         user = request.user
+        user_profile = user.profile
 
-        if user.userprofile.role != 'teacher' or enrollment.course.instructor != user:
+        if user_profile.role != 'teacher' or enrollment.course.instructor != user:
             raise PermissionDenied("You do not have permission to remove this student.")
 
         enrollment.delete()
@@ -233,7 +234,8 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
         )
 
         return Response({"detail": "Student removed successfully."}, status=status.HTTP_200_OK)
-    
+
+
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def enrolled_courses(self, request):
         user = request.user
