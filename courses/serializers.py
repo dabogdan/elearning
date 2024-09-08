@@ -53,8 +53,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         enrolled_courses = validated_data.get('enrolled_courses', [])
         if enrolled_courses:
             instance.enrolled_courses.set(enrolled_courses)
-        # if 'enrolled_courses' in validated_data:
-        #     instance.enrolled_courses.set(validated_data['enrolled_courses'])
         instance.save()
 
         return instance

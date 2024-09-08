@@ -134,7 +134,7 @@ class StatusUpdateViewSetTests(APITestCase):
         self.other_user_profile = UserProfile.objects.create(user=self.other_user, role='teacher')
 
     def test_create_status_update(self):
-        url = reverse('statusupdate-list')  # Ensure this matches your URL pattern
+        url = reverse('statusupdate-list')
         data = {'content': 'This is a new status update'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

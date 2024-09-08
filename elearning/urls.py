@@ -14,13 +14,6 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-# from django.contrib import admin
-# from django.urls import path, include
-
-# urlpatterns = [
-#     path('admin/', admin.site.urls),
-#     path('', include('courses.urls')),
-# ]
 
 from django.contrib import admin
 from django.urls import path, include
@@ -31,6 +24,6 @@ schema_view = get_swagger_view(title='E-Learning API')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('courses.urls')),  # Your API routes
+    path('', include('courses.urls')),  # Your API routes
     path('swagger/', schema_view),  # Swagger UI endpoint
 ]

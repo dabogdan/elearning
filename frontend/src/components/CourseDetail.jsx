@@ -92,21 +92,6 @@ function CourseDetail() {
         fetchProfile();
     }, [token, role]);
 
-    // const handleRemoveStudent = async (enrollmentId) => {
-    //     try {
-    //         await axios.post(`${process.env.REACT_APP_BASE_URL}/api/enrollments/${enrollmentId}/remove/`, {}, {
-    //             headers: {
-    //                 Authorization: `Bearer ${token}`
-    //             }
-    //         });
-    //         toast.success("Student removed successfully!");
-    //         fetchCourse(); // Re-fetch course details to update the enrolled students list
-    //     } catch (error) {
-    //         console.error("Failed to remove student", error);
-    //         toast.error("Failed to remove student. Please try again.");
-    //     }
-    // };
-
     const handleRemoveStudent = async (enrollmentId) => {
         try {
             await axios.post(`${process.env.REACT_APP_BASE_URL}/api/enrollments/${enrollmentId}/remove/`, {}, {
