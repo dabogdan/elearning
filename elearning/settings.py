@@ -157,7 +157,13 @@ AUTHENTICATION_BACKENDS = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost",
-    "http://127.0.0.1"
+    "http://127.0.0.1",
+    "http://127.0.0.1:8000",
+    "http://localhost:3000",
+    "https://elearning.dimko.dev",
+    "https://www.elearning.dimko.dev",
+    'http://localhost:8000',
+    'https://elearning-app.dimko.dev'
 ]
 
 MEDIA_URL = '/media/'
