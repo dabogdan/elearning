@@ -72,9 +72,3 @@ An advanced, full-stack eLearning web application designed to offer an interacti
 5. **Access the app**:
     - Frontend: `http://localhost:3000`
     - Backend API: `http://localhost:8000/api`
-
-🔗 [Explore the Repository](https://github.com/dabogdan/elearning)
-
----
-
-This version provides clear **installation instructions** for users to set up the project locally, which is helpful for contributors or developers who want to test or improve the app.
